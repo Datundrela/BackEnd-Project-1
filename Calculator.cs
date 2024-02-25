@@ -65,12 +65,12 @@ namespace BackEnd_Project_1
         }
         public static int AskForOperator()
         {
-            string pattern = "^[1-4]$";
+            string pattern = "^[0-4]$";
             bool correct = true;
             string input;
             do
             {
-                Console.WriteLine("Please, choose the operator\n\n1) +\n2) -\n3) *\n4) /");
+                Console.WriteLine("\nPlease, choose the operator\n\n0) End\n1) +\n2) -\n3) *\n4) /");
                 input = Console.ReadLine();
                 try
                 {
@@ -109,15 +109,27 @@ namespace BackEnd_Project_1
         public static void Execute()
         {
             int operation = AskForOperator();
+            if (operation == 0) Environment.Exit(0);
             double operand1 = AskForOperand();
             double operand2 = AskForOperand();
             double result = Operators.operators[operation].Invoke(operand1, operand2);
             Console.WriteLine($"\nResult: {result}");
+            Execute1(result);
+        }
+
+        public static void Execute1(double operand1)
+        {
+            int operation = AskForOperator();
+            if (operation == 0) Environment.Exit(0);
+            double operand2 = AskForOperand();
+            double result = Operators.operators[operation].Invoke(operand1, operand2);
+            Console.WriteLine($"\nResult: {result}");
+            Execute1(result);
         }
 
         public static void Main(string[] args)
         {
-            Execute();
+            Game1.Start();
         }
     }
 }
