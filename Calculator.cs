@@ -129,7 +129,7 @@ namespace BackEnd_Project_1
 
         public static void Main(string[] args)
         {
-            Game1.Start();
+            Game2.Execute(10);
         }
     }
 }
