@@ -337,8 +337,8 @@ namespace BackEnd_Project_1
             {
                 receiver = Bank.DeserializeAccount(Bank.FindFileByIBAN(iban));
                 receiver.Balance += amount;
-                TransactionHistory.AddLast(new Transaction($"{this.Name}  {this.ID}", $"{receiver.Name}  {receiver.ID}", amount, DateTime.Now));
-                receiver.TransactionHistory.AddLast(new Transaction($"{this.Name}  {this.ID}", $"{receiver.Name}  {receiver.ID}", amount, DateTime.Now));
+                TransactionHistory.AddLast(new Transaction($"{this.Name}  {this.ID}", $"{receiver.Name}  {receiver.ID}", amount));
+                receiver.TransactionHistory.AddLast(new Transaction($"{this.Name}  {this.ID}", $"{receiver.Name}  {receiver.ID}", amount));
                 this.Balance -= amount;
                 Bank.SerializeAccount(receiver, receiver.GetPath());
                 Console.WriteLine("Transaction executed successfully!");
