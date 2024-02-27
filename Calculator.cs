@@ -129,11 +129,8 @@ namespace BackEnd_Project_1
 
         public static void Main(string[] args)
         {
-            /*string path = $@"C:\Users\sadag\OneDrive\Desktop\Accounts\";
-            string iban = "1234567890";
-            string id = "01219092702";
-            File.Create(path + @$"{iban}_{id}.txt");*/
-            new Bank().Start();
+            //new Bank().Start();
+            new UserInterface().Start();
         }
     }
 }
