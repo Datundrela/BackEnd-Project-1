@@ -31,7 +31,12 @@ namespace BackEnd_Project_1
                 if (table[i]) sb.Append(word[i] + " ");
                 else sb.Append('_' + " ");
             }
-            sb.Append(word.Length);
+            int falseCount = 0;
+            for(int i = 0; i < table.Length; i++)
+            {
+                if (table[i] == false) falseCount++;
+            }
+            sb.Append(" " + falseCount);
             Console.WriteLine(sb.ToString());
         }
 
@@ -78,9 +83,12 @@ namespace BackEnd_Project_1
                     allLetters[guess] = true;
                     for (int i = 0; i < characters.Length; i++)
                     {
-                        if (characters[i] == guess) table[i] = true;
-                    }
-                    count++;
+                        if (characters[i] == guess)
+                        {
+                            table[i] = true;
+                            count++;
+                        }
+                        }
                 } else
                 {
                     Console.WriteLine("Incorrect!");
