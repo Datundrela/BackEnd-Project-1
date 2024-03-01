@@ -27,15 +27,36 @@ namespace BackEnd_Project_1
 
         public string ToString()
         {
-            return $"{Title} by {Author} {YearPublished};";
+            return $"{Title} by {Author} : {YearPublished};";
         }
     }
 
     [Serializable]
     internal class BookManager
     {
+        public static string CreateBooksFile()
+        {
+            string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            string filePath = Path.Combine(desktopPath, "Books.txt");
+
+            try
+            {
+                if (!File.Exists(filePath))
+                {
+                    File.Create(filePath).Close();
+                }
+                return filePath;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error creating file: {ex.Message}");
+                return null;
+            }
+        }
+
+
         public LinkedList<Book> Books { get; set; } 
-        public string Path { get; } = @"C:\Users\sadag\OneDrive\Desktop\Books.txt";
+        public static string basePath { get; } = CreateBooksFile();
 
 
 
@@ -43,7 +64,7 @@ namespace BackEnd_Project_1
         {
                 try
                 {
-                    string list = File.ReadAllText(Path);
+                    string list = File.ReadAllText(basePath);
                     if (string.IsNullOrEmpty(list))
                     {
                         Books = new LinkedList<Book>();
@@ -65,7 +86,7 @@ namespace BackEnd_Project_1
             try
             {
                 string list = JsonConvert.SerializeObject(Books);
-                File.WriteAllText(Path, list);
+                File.WriteAllText(basePath, list);
             } catch (Exception ex)
             {
                 Console.WriteLine($"Error serializing account: {ex.Message}");
@@ -76,7 +97,7 @@ namespace BackEnd_Project_1
         {
             try
             {
-                string list = File.ReadAllText(Path);
+                string list = File.ReadAllText(basePath);
                 Books = JsonConvert.DeserializeObject<LinkedList<Book>>(list);
             } catch (Exception ex)
             {
@@ -105,6 +126,7 @@ namespace BackEnd_Project_1
 
         public Book FindBook(string title)
         {
+            
             return Books.FirstOrDefault(book => book.Title.Equals(title));
         }
     }
@@ -179,7 +201,7 @@ namespace BackEnd_Project_1
                 title = Console.ReadLine();
                 if (title == "") Console.WriteLine("Invalid input!");
             } while (title == "");
-            Book book = bookManager.FindBook(title);
+            Book book = bookManager.FindBook(ConvertFirstLetterToUpper(title));
             if (book == null) Console.WriteLine("Could not find a book with such title.");
             else Console.WriteLine("\n" + book.ToString());
         }
@@ -197,7 +219,7 @@ namespace BackEnd_Project_1
             return input;
         }
 
-        static string ConvertFirstLetterToUpper(string input)
+        public static string ConvertFirstLetterToUpper(string input)
         {
             string[] words = input.ToLower().Split(new char[] { ' ', '-' }, StringSplitOptions.RemoveEmptyEntries);
             TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;

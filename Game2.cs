@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -9,17 +10,51 @@ namespace BackEnd_Project_1
 {
     internal class Game2
     {
-        public static string ChooseWord(string path)
+        public static string ReadEmbeddedResource(string resourceName)
         {
-            string filePath = path;
+            try
+            {
+                // Load the current assembly
+                Assembly assembly = Assembly.GetExecutingAssembly();
 
-            string randomLine = File.ReadLines(filePath).Skip(new Random().Next(0, File.ReadLines(filePath).Count())).First();
+                // Open the embedded resource stream
+                using (Stream stream = assembly.GetManifestResourceStream(resourceName))
+                {
+                    if (stream != null)
+                    {
+                        // Read the content of the resource
+                        using (StreamReader reader = new StreamReader(stream))
+                        {
+                            // Read the entire content of the resource into a string
+                            string resourceContent = reader.ReadToEnd();
+                            return resourceContent;
+                        }
+                    }
+                    else
+                    {
+                        throw new ArgumentException("Resource not found.");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Handle exceptions
+                Console.WriteLine($"Error reading embedded resource: {ex.Message}");
+                return null;
+            }
+        }
 
-            string[] wordsInLine = randomLine.Split(new[] { ' ', '\t', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
-
-            string randomWord = wordsInLine[new Random().Next(0, wordsInLine.Length)];
-
-            return randomWord;
+        static string GetRandomWord(string[] words)
+        {
+            Random rand = new Random();
+            int index = rand.Next(0, words.Length);
+            return words[index];
+        }
+        public static string ChooseWord()
+        {
+            string file = ReadEmbeddedResource("BackEnd_Project_1.Resources.Nouns.txt");
+            string[] words = file.Split(new char[] { '\n' });
+            return GetRandomWord(words);
         }
 
         public static void WriteWord(char[] word, bool[] table)
@@ -65,7 +100,7 @@ namespace BackEnd_Project_1
             int count = 0;
             int lives = amount;
             char guess;
-            char[] characters = ChooseWord(@"C:\Users\sadag\OneDrive\Desktop\Nouns.txt").ToCharArray();
+            char[] characters = ChooseWord().ToCharArray();
             bool[] table = new bool[characters.Length];
             while(count < characters.Length && lives > 0)
             {

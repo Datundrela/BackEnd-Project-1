@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -130,7 +131,17 @@ namespace BackEnd_Project_1
         public static void Main(string[] args)
         {
             //new Bank().Start();
-            new UserInterface().Start();
+            //new UserInterface().Start();
+            //Game1.Execute(1,10);
+            //Game2.Execute(10);
+            //Execute();
+            Assembly assembly = Assembly.GetExecutingAssembly();
+            string[] ragaca = assembly.GetManifestResourceNames();
+            Console.WriteLine("List of embedded resources:");
+            foreach (var resourceName in ragaca)
+            {
+                Console.WriteLine(resourceName);
+            }
         }
     }
 }

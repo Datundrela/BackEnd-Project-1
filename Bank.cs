@@ -12,7 +12,27 @@ namespace BackEnd_Project_1
 {
     internal class Bank
     {
-        public static string basePath { get; } = @"C:\Users\sadag\OneDrive\Desktop\Accounts\";
+        static string CreateAccountsFolder()
+        {
+            try
+            {
+                string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+                string accountsFolderPath = Path.Combine(desktopPath, "Accounts");
+                if (!Directory.Exists(accountsFolderPath))
+                {
+                    Directory.CreateDirectory(accountsFolderPath);
+                }
+
+                return accountsFolderPath;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error creating Accounts folder: {ex.Message}");
+                return null;
+            }
+        }
+
+        public static string basePath { get; } = CreateAccountsFolder();
 
 
         public static void SerializeAccount(Account account, string filePath)
@@ -46,20 +66,40 @@ namespace BackEnd_Project_1
             }
             return account;
         }
-        
+
 
         public static string FindFileByIBAN(string iban)
         {
-            string filePath = Path.Combine(basePath, $"{iban}.txt");
-            if (File.Exists(filePath))
+            if (!Directory.Exists(basePath))
             {
-                return filePath;
+                Console.WriteLine("Accounts folder not found.");
+                return null;
             }
-            else
+            try
             {
+                string[] files = Directory.GetFiles(basePath, "*.txt");
+                foreach (string file in files)
+                {
+                    string fileName = Path.GetFileNameWithoutExtension(file);
+                    string[] parts = fileName.Split('_');
+                    if (parts.Length == 2)
+                    {
+                        if (parts[0] == iban)
+                        {
+                            return file;
+                        }
+                    }
+                }
+                Console.WriteLine("File with the specified IBAN not found.");
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error finding file: {ex.Message}");
                 return null;
             }
         }
+
 
         public static string FindFileByID(string id)
         {
@@ -305,8 +345,8 @@ namespace BackEnd_Project_1
         public void GivePathAndIban()
         {
             Iban = CreateIban();
-            using (FileStream fs = new FileStream(Bank.basePath + @$"{Iban}_{ID}.txt", FileMode.Create)) { }
-            Path = Bank.basePath + @$"{Iban}_{ID}.txt";
+            using (FileStream fs = new FileStream(Bank.basePath + @$"\{Iban}_{ID}.txt", FileMode.Create)) { }
+            Path = Bank.basePath + @$"\{Iban}_{ID}.txt";
         }
 
         public string GetPath()
@@ -343,7 +383,10 @@ namespace BackEnd_Project_1
                 Bank.SerializeAccount(receiver, receiver.GetPath());
                 Console.WriteLine("Transaction executed successfully!");
             }
-            else
+            else if(this.Balance < amount)
+            {
+                Console.WriteLine("Not enough funds.");
+            } else 
             {
                  Console.WriteLine($"File with IBAN '{iban}' not found.");
             }
@@ -361,6 +404,9 @@ namespace BackEnd_Project_1
                 this.Balance -= amount;
                 Bank.SerializeAccount(receiver, receiver.GetPath());
                 Console.WriteLine("Transaction executed successfully!");
+            } else if (this.Balance < amount)
+            {
+                Console.WriteLine("Not enough funds.");
             }
             else
             {
